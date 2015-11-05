@@ -1,0 +1,29 @@
+[
+  "^ ",
+  "~:tvshows/title", "Your TV shows",
+  "~:tvshows/list",
+  [
+    [
+      "^ ",
+      "~:tvshow/title", "Game of Thrones",
+      "~:tvshow/year", "2011–",
+      "~:tvshow/rated", "TV-MA",
+      "~:tvshow/released", "17 Apr 2011",
+      "~:tvshow/runtime", "56 min",
+      "~:tvshow/genre", "Adventure, Drama, Fantasy",
+      "~:tvshow/director", "N/A",
+      "~:tvshow/writer", "David Benioff, D.B. Weiss",
+      "~:tvshow/actors", "Peter Dinklage, Lena Headey, Emilia Clarke, Kit Harington",
+      "~:tvshow/plot", "Several noble families fight for control of the mythical land of Westeros.",
+      "~:tvshow/language", "English",
+      "~:tvshow/country", "USA",
+      "~:tvshow/awards", "Won 1 Golden Globe. Another 127 wins & 233 nominations.",
+      "~:tvshow/poster", "http://ia.media-imdb.com/images/M/MV5BNTgxOTI4NzY2M15BMl5BanBnXkFtZTgwMjY3MTM2NDE@._V1_SX300.jpg",
+      "~:tvshow/metascore", "N/A",
+      "~:tvshow/imdbrating", 9.5,
+      "~:tvshow/imdbvotes", 853995,
+      "~:tvshow/imdbid", "tt0944947",
+      "~:tvshow/type", "series"
+    ]
+  ]
+]
