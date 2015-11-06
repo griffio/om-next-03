@@ -1,3 +1,3 @@
 (use 'figwheel-sidecar.repl-api)
-(start-figwheel! {:all-builds (figwheel-sidecar.repl/get-project-cljs-builds)})
+(start-figwheel! {:all-builds (figwheel-sidecar.config/get-project-builds)})
 (cljs-repl)

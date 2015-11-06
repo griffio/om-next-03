@@ -14,34 +14,62 @@
 
 (println "Edits to this text should show up in your developer console.")
 
+(defui Episode
+       static om/IQuery
+       (query [this]
+              [:episode/title :episode/released :episode/number :episode/imdbRating :episode/imdbID])
+       Object
+       (render [this]
+               (let [{:keys [episode/title episode/released episode/number episode/imdbRating episode/imdbID]} (om/props this)]
+                 (dom/li nil
+                         (dom/h4 nil (str title ": " released))
+                         (dom/a #js {:href (str "http://www.imdb.com/title/" imdbID)} "imdb")
+                         (dom/label nil "rating:") (dom/span nil imdbRating)))))
+
+(def television-episode (om/factory Episode))
+
+(defui Season
+       static om/IQuery
+       (query [this]
+              [:tvshow/season])
+       Object
+       (render [this]
+               (let [{:keys [tvshow/season tvshow/episodes]} (om/props this)]
+                 (dom/li nil
+                         (dom/h3 nil (str "Season: " season))
+                         (apply dom/ul nil
+                                (map television-episode episodes))))))
+
+(def television-season (om/factory Season))
+
 (defui TelevisionShow
        static om/IQuery
        (query [this]
               [:tvshow/title :tvshow/year :tvshow/rated :tvshow/released :tvshow/runtime :tvshow/type])
        Object
        (render [this]
-               (println (om/props this))
-               (let [{:keys [tvshow/title tvshow/year tvshow/rated tvshow/released tvshow/runtime tvshow/type]} (om/props this)]
+               (let [{:keys [tvshow/title tvshow/year tvshow/rated tvshow/released tvshow/runtime tvshow/type tvshow/seasons]} (om/props this)]
                  (dom/li nil
-                         (dom/h3 nil title)
-                         (dom/h4 nil (str type " " year))
+                         (dom/h3 nil (str title ": ( " type " " year " )"))
                          (dom/label nil "Rated:") (dom/span nil rated)
                          (dom/label nil "Released:") (dom/span nil released)
-                         (dom/label nil "Running Time:") (dom/span nil runtime)))))
+                         (dom/label nil "Running Time:") (dom/span nil runtime)
+                         (apply dom/ul nil
+                                (map television-season seasons))))))
 
 (def television-show (om/factory TelevisionShow))
 
 (defui TelevisionShows
        static om/IQuery
        (query [this]
-              [:tvshows/title :tvshows/list])
+              [:tvshows/title :tvshows/listing])
        Object
        (render [this]
-               (let [{:keys [tvshows/title tvshows/list]} (om/props this)]
+               (let [{:keys [tvshows/title tvshows/listing]} (om/props this)]
                  (dom/div nil
                           (dom/h2 nil title)
                           (apply dom/ul nil
-                                 (map television-show list))))))
+                                 (map television-show listing))))))
 
 (defmulti reading om/dispatch)
 

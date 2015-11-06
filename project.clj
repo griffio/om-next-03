@@ -5,14 +5,14 @@
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "1.7.145"]
-                 [org.omcljs/om "1.0.0-alpha14"]
+                 [org.clojure/clojurescript "1.7.170"]
+                 [org.omcljs/om "1.0.0-alpha17"]
                  [org.clojure/test.check "0.8.2"]
                  [com.cognitect/transit-cljs "0.8.225"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [figwheel-sidecar "0.4.0"]]
+                 [figwheel-sidecar "0.5.0-SNAPSHOT"]]
 
-  :plugins [[lein-cljsbuild "1.1.0"]]
+  :plugins [[lein-cljsbuild "1.1.1-SNAPSHOT"]]
 
   :source-paths ["src"]
 
