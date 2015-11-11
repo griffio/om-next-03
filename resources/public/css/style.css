@@ -1,3 +1,24 @@
-/* some style */
+body {
+    margin: 0 auto;
+    padding: 0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+}
 
 label { padding: 0 1em;}
+
+ol {
+    list-style: none;
+    width: 500px;
+    float: left;
+    background: cornsilk;
+}
+
+li {
+    padding: 10px;
+    color: cornflowerblue;
+}
+
+li.js-dragging {
+    background: coral;
+}

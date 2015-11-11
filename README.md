@@ -1,12 +1,10 @@
-# om-next-02
+# om-next-03
 
 Simple [om-next](https://github.com/omcljs/om/wiki/Quick-Start-%28om.next%29) example to tv shows.
  
-Load "state" into "reconciler" using xhr data.
+A Drag and Drop list 
  
-Expand to uses queries. 
- 
-[1.0.0-alpha17](https://clojars.org/org.omcljs/om)
+[1.0.0-alpha19](https://clojars.org/org.omcljs/om)
 
 ## Overview
 
