@@ -23,7 +23,9 @@
   (let [val (vec from) parts (split-at to (remove-it vec val)) part1 (first parts) part2 (second parts)]
     (concat part1 [val] part2)))
 
-(defn move-episode [state from to])
+(defn move-episode [state from to]
+  (println "from " from " to" to)
+  state)
 
 (defn reconciler-send [url]
   "result takes a callback to receive json response"
@@ -43,19 +45,20 @@
               [:episode :title :released :imdbRating :imdbID])
        Object
        (render [this]
-               (let [{:keys [episode title imdbRating imdbID]} (om/props this)]
+               (let [{:keys [episode title imdbRating imdbID]} (om/props this) {:keys [drag-start drag-drop]} (om/get-computed this)]
                  (dom/li nil
-                         (dom/div #js {:data-id     episode
-                                       :className   "js-dragging"
+                         (dom/div #js {:className   "js-dragging"
                                        :draggable   true
                                        :onDragStart (fn [e] (let [datr (.-dataTransfer e) ident (om/get-ident this)]
                                                               (set! (.-effectAllowed datr) "move")
-                                                              (.setData datr "text/html" "")))
-                                       :onDragOver  (fn [e] (let [targ (.-currentTarget e)]
+                                                              (.setData datr "text/html" "")
+                                                              (drag-start e ident)))
+                                       :onDragEnd   (fn [e] (let [ident (om/get-ident this)]))
+                                       :onDragOver  (fn [e] (let [ident (om/get-ident this)]
                                                               (.preventDefault e)
                                                               (-> e .-dataTransfer .-dropEffect (set! "move"))))
-                                       :onDrop      (fn [e] (let [target-ident (om/get-ident this) drag-ident (:drag-ident (om/get-state this))]))}
-
+                                       :onDrop      (fn [e] (let [ident (om/get-ident this)]
+                                                              (drag-drop e ident)))}
                                   (dom/h3 nil str title)
                                   (dom/a #js {:href (str "http://www.imdb.com/title/" imdbID)} "imdb")
                                   (dom/label nil "rating:") (dom/span nil imdbRating))))))
@@ -67,11 +70,33 @@
        (query [this]
               [{:episodes (om/get-query Episode)}])
        Object
+       (drag-start [this e key]
+                   (println (str "start:" this " e:" e " k" key))
+                   (om/update-state! this assoc :dragged-key key))
+
+       (drag-end [this e]
+                 (println (str "end:" this " e:" e))
+                 (om/update-state! this dissoc :dragged-key))
+
+       (drag-over [this e]
+                  (.preventDefault e)
+                  (println (str "over:" this " e:" e)))
+
+       (drag-drop [this e key]
+                  (let [from-key (:dragged-key (om/get-state this))
+                        to-key key]
+                    (.preventDefault e)
+                    (println (str "drop:" this " e:" e " k" to-key " f" from-key))
+                    (om/transact! this `[(episodes/move {:move [~from-key ~to-key]})])))
        (render [this]
                (let [{:keys [episodes]} (om/props this)]
                  (dom/div nil
-                          (apply dom/ol nil
-                                 (map episode-ui episodes))))))
+                          (dom/ol nil
+                                  (for [ep episodes]
+                                    (episode-ui (om/computed ep {:drag-start (fn [e k] (.drag-start this e k))
+                                                                 :drag-end   #(.drag-end this %)
+                                                                 :drag-over  #(.drag-over this %)
+                                                                 :drag-drop  (fn [e k] (.drag-drop this e k))}))))))))
 
 (defmulti reading om/dispatch)
 
@@ -80,7 +105,7 @@
   (let [st @state]
     (if (contains? st key)
       {:value (get st key)}                                 ;; loads data from app state
-      {:remote true})))                                     ;; loads data from /episodes.json
+      {:remote-episodes true})))                            ;; loads data from external file /episodes.json
 
 (defmethod reading :episode/dragged
   [{:keys [state]} key _]
@@ -89,23 +114,16 @@
 
 (defmulti mutating om/dispatch)
 
-(defmethod mutating 'episode/drag
-  [{:keys [state]} _ params]
-  {:value  [:episode/dragged]
-   :action (fn []
-             (if-not (empty? params)
-               (swap! state assoc :episode/dragged params)
-               (swap! state assoc :episode/dragged nil)))})
-
 (defmethod mutating 'episodes/move
-  [{:keys [state]} _ {:keys [from to]}]
-  {:value  [:episodes]
-   :action #(swap! state move-episode from to)})
+  [{:keys [state]} _ {:keys [move]}]
+  {:action
+   (fn [] (swap! state move-episode (first move) (second move)))})
 
 (def reconciler
   (om/reconciler
     {:state     (atom {})
      :normalize false
+     :remotes   [:remote-episodes]                          ;; vector remotes
      :parser    (om/parser {:read reading :mutate mutating})
      :send      (reconciler-send "/episodes.json")}))
 
