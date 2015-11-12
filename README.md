@@ -4,7 +4,7 @@ Simple [om-next](https://github.com/omcljs/om/wiki/Quick-Start-%28om.next%29) ex
  
 A Drag and Drop list 
  
-[1.0.0-alpha19](https://clojars.org/org.omcljs/om)
+[1.0.0-alpha20](https://clojars.org/org.omcljs/om)
 
 ## Overview
 
