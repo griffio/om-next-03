@@ -16,16 +16,15 @@
 
 (println "Edits to this text should show up in your developer console.")
 
-(defn remove-it [vec val]
-  (filter (fn [n] (not= n val)) vec))
+(defn remove-it [coll val]
+  (filter (fn [n] (not= n val)) coll))
 
-(defn move-it [vec from to]
-  (let [val (vec from) parts (split-at to (remove-it vec val)) part1 (first parts) part2 (second parts)]
-    (concat part1 [val] part2)))
+(defn move-it [coll from to]
+  (let [val (coll from) parts (split-at to (remove-it coll val)) part1 (first parts) part2 (second parts)]
+    (vec (concat part1 [val] part2))))
 
 (defn move-episode [state from to]
-  (println "from " from " to" to)
-  state)
+  (move-it state (dec (second from)) (dec (second to))))
 
 (defn reconciler-send [url]
   "result takes a callback to receive json response"
@@ -38,8 +37,8 @@
 
 (defui Episode
        static om/Ident
-       (ident [this props]
-              [:episode/by-id (:episode props)])
+       (ident [this {:keys [episode]}]
+              [:episode episode])
        static om/IQuery
        (query [this]
               [:episode :title :released :imdbRating :imdbID])
@@ -87,7 +86,7 @@
                         to-key key]
                     (.preventDefault e)
                     (println (str "drop:" this " e:" e " k" to-key " f" from-key))
-                    (om/transact! this `[(episodes/move {:move [~from-key ~to-key]})])))
+                    (om/transact! this `[(episodes/move {:move [~from-key ~to-key]}) :episodes])))
        (render [this]
                (let [{:keys [episodes]} (om/props this)]
                  (dom/div nil
@@ -101,8 +100,10 @@
 (defmulti reading om/dispatch)
 
 (defmethod reading :episodes
-  [{:keys [state]} key _]
+  [{:keys [state ast]} key _]
+  (println (str "read" key " ast" ast))
   (let [st @state]
+    (println (str "read" " " (contains? st key)))
     (if (contains? st key)
       {:value (get st key)}                                 ;; loads data from app state
       {:remote-episodes true})))                            ;; loads data from external file /episodes.json
@@ -116,8 +117,9 @@
 
 (defmethod mutating 'episodes/move
   [{:keys [state]} _ {:keys [move]}]
-  {:action
-   (fn [] (swap! state move-episode (first move) (second move)))})
+  {:value {:keys [:episodes]}
+   :action
+          (fn [] (swap! state update :episodes move-episode (first move) (second move)))})
 
 (def reconciler
   (om/reconciler
