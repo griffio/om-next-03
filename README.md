@@ -8,6 +8,8 @@ A Drag and Drop list
 
 ## Overview
 
+![om-next-03.gif](https://raw.githubusercontent.com/griffio/griffio.github.io/master/public/om-next-03.gif)
+
 ## Setup
 
 Intellij - Cursive - REPL
