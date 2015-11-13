@@ -16,15 +16,12 @@
 
 (println "Edits to this text should show up in your developer console.")
 
-(defn remove-it [coll val]
-  (filter (fn [n] (not= n val)) coll))
+(defn remove-episode [episodes ep]
+  (filter (fn [it] (not= it ep)) episodes))
 
-(defn move-it [coll from to]
-  (let [val (coll from) parts (split-at to (remove-it coll val)) part1 (first parts) part2 (second parts)]
+(defn move-episode [episodes from to]
+  (let [val (episodes from) parts (split-at to (remove-episode episodes val)) part1 (first parts) part2 (second parts)]
     (vec (concat part1 [val] part2))))
-
-(defn move-episode [state from to]
-  (move-it state (dec (second from)) (dec (second to))))
 
 (defn reconciler-send [url]
   "result takes a callback to receive json response"
@@ -44,21 +41,21 @@
               [:episode :title :released :imdbRating :imdbID])
        Object
        (render [this]
-               (let [{:keys [episode title imdbRating imdbID]} (om/props this) {:keys [drag-start drag-drop]} (om/get-computed this)]
+               (let [{:keys [episode title imdbRating imdbID]} (om/props this)]
                  (dom/li nil
                          (dom/div #js {:className   "js-dragging"
                                        :draggable   true
-                                       :onDragStart (fn [e] (let [datr (.-dataTransfer e) ident (om/get-ident this)]
+                                       :onDragStart (fn [e] (let [datr (.-dataTransfer e) {:keys [drag-start index]} (om/get-computed this)]
                                                               (set! (.-effectAllowed datr) "move")
                                                               (.setData datr "text/html" "")
-                                                              (drag-start e ident)))
+                                                              (drag-start e index)))
                                        :onDragEnd   (fn [e] (let [ident (om/get-ident this)]))
                                        :onDragOver  (fn [e] (let [ident (om/get-ident this)]
                                                               (.preventDefault e)
                                                               (-> e .-dataTransfer .-dropEffect (set! "move"))))
-                                       :onDrop      (fn [e] (let [ident (om/get-ident this)]
-                                                              (drag-drop e ident)))}
-                                  (dom/h3 nil str title)
+                                       :onDrop      (fn [e] (let [{:keys [drag-drop index]} (om/get-computed this)]
+                                                              (drag-drop e index)))}
+                                  (dom/h3 nil (str episode ". " title))
                                   (dom/a #js {:href (str "http://www.imdb.com/title/" imdbID)} "imdb")
                                   (dom/label nil "rating:") (dom/span nil imdbRating))))))
 
@@ -69,41 +66,39 @@
        (query [this]
               [{:episodes (om/get-query Episode)}])
        Object
-       (drag-start [this e key]
-                   (println (str "start:" this " e:" e " k" key))
-                   (om/update-state! this assoc :dragged-key key))
+       (drag-start [this e index]
+                   (om/update-state! this assoc :dragged-index index))
 
        (drag-end [this e]
-                 (println (str "end:" this " e:" e))
-                 (om/update-state! this dissoc :dragged-key))
+                 (om/update-state! this dissoc :dragged-index))
 
        (drag-over [this e]
-                  (.preventDefault e)
-                  (println (str "over:" this " e:" e)))
+                  (.preventDefault e))
 
-       (drag-drop [this e key]
-                  (let [from-key (:dragged-key (om/get-state this))
-                        to-key key]
+       (drag-drop [this e index]
+                  (let [from-index (:dragged-index (om/get-state this))
+                        to-index index]
                     (.preventDefault e)
-                    (println (str "drop:" this " e:" e " k" to-key " f" from-key))
-                    (om/transact! this `[(episodes/move {:move [~from-key ~to-key]}) :episodes])))
+                    (om/transact! this `[(episodes/move {:move [~from-index ~to-index]}) :episodes]))) ;; `[(query) read)] mutate specification
        (render [this]
                (let [{:keys [episodes]} (om/props this)]
                  (dom/div nil
                           (dom/ol nil
-                                  (for [ep episodes]
-                                    (episode-ui (om/computed ep {:drag-start (fn [e k] (.drag-start this e k))
-                                                                 :drag-end   #(.drag-end this %)
-                                                                 :drag-over  #(.drag-over this %)
-                                                                 :drag-drop  (fn [e k] (.drag-drop this e k))}))))))))
+                                  (map-indexed
+                                    (fn [idx ep]
+                                      (episode-ui (om/computed ep
+                                                               {:index      idx
+                                                                :drag-start (fn [e k] (.drag-start this e k))
+                                                                :drag-end   #(.drag-end this %)
+                                                                :drag-over  #(.drag-over this %)
+                                                                :drag-drop  (fn [e k] (.drag-drop this e k))})))
+                                    episodes))))))
 
 (defmulti reading om/dispatch)
 
 (defmethod reading :episodes
   [{:keys [state ast]} key _]
-  (println (str "read" key " ast" ast))
   (let [st @state]
-    (println (str "read" " " (contains? st key)))
     (if (contains? st key)
       {:value (get st key)}                                 ;; loads data from app state
       {:remote-episodes true})))                            ;; loads data from external file /episodes.json
