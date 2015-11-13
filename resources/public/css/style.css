@@ -11,12 +11,13 @@ ol {
     list-style: none;
     width: 500px;
     float: left;
-    background: cornsilk;
+    background: silver;
 }
 
 li {
     padding: 10px;
-    color: cornflowerblue;
+    background: darkseagreen;
+    color: white;
 }
 
 li.js-dragging {

@@ -87,8 +87,8 @@
                                   (map-indexed
                                     (fn [idx ep]
                                       (episode-ui (om/computed ep
-                                                               {:index      idx
-                                                                :drag-start (fn [e k] (.drag-start this e k))
+                                                               {:index      idx ;; use the index to help with drag drop
+                                                                :drag-start (fn [e k] (.drag-start this e k)) ;; could use idx param here
                                                                 :drag-end   #(.drag-end this %)
                                                                 :drag-over  #(.drag-over this %)
                                                                 :drag-drop  (fn [e k] (.drag-drop this e k))})))
@@ -120,7 +120,7 @@
   (om/reconciler
     {:state     (atom {})
      :normalize false
-     :remotes   [:remote-episodes]                          ;; vector remotes
+     :remotes   [:remote-episodes]                          ;; vector of remotes
      :parser    (om/parser {:read reading :mutate mutating})
      :send      (reconciler-send "/episodes.json")}))
 
