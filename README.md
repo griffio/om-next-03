@@ -1,9 +1,10 @@
 # om-next-03
 
-Simple [om-next](https://github.com/omcljs/om/wiki/Quick-Start-%28om.next%29) example to tv shows.
+Simple [om-next](https://github.com/omcljs/om/wiki/Quick-Start-%28om.next%29) example.
  
 A Drag and Drop list (with data from xhr json file to show remote reconciler)
-(Works in Chrome, Safari and TheFox) 
+
+(Works in Chrome, Safari and The Fox) 
  
 [1.0.0-alpha22](https://clojars.org/org.omcljs/om)
 
