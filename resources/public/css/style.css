@@ -5,7 +5,15 @@ body {
     font-size: 14px;
 }
 
-label { padding: 0 1em;}
+a {
+    color: gold;
+    font-weight: bold;
+}
+
+label {
+    padding: 0 1em;
+    font-size: 1.3em;
+}
 
 ol {
     list-style: none;
@@ -16,7 +24,7 @@ ol {
 
 li {
     padding: 10px;
-    background: darkseagreen;
+    background: steelblue;
     color: white;
 }
 
