@@ -41,22 +41,24 @@
               [:episode :title :released :imdbRating :imdbID])
        Object
        (render [this]
-               (let [{:keys [episode title imdbRating imdbID]} (om/props this)]
+               (let [{:keys [episode title imdbRating imdbID]} (om/props this)
+                     {:keys [drag-drop drag-end drag-over drag-start]} (om/get-computed this)] ;; computed delegate callbacks
                  (dom/li nil
                          (dom/div #js {:className   "js-dragging"
                                        :draggable   true
-                                       :onDragStart (fn [e] (let [datr (.-dataTransfer e) {:keys [drag-start]} (om/get-computed this)]
+                                       :onDragStart (fn [e] (let [datr (.-dataTransfer e)]
                                                               (set! (.-effectAllowed datr) "move")
-                                                              (.setData datr "text/html" "")
+                                                              (.setData datr "text" title);; set anything, we are not using the data
                                                               (drag-start e)))
-                                       :onDragEnd   (fn [e] (let [{:keys [drag-end]} (om/get-computed this)]
+                                       :onDragEnd   (fn [e] (let []
                                                               (drag-end e)))
-                                       :onDragOver  (fn [e] (let [{:keys [drag-over]} (om/get-computed this)]
+                                       :onDragOver  (fn [e] (let []
                                                               (.preventDefault e)
                                                               (-> e .-dataTransfer .-dropEffect (set! "move"))
                                                               (drag-over e)))
-                                       :onDrop      (fn [e] (let [{:keys [drag-drop]} (om/get-computed this)]
+                                       :onDrop      (fn [e] (let []
                                                               (.preventDefault e)
+                                                              (.stopPropagation e)
                                                               (drag-drop e)))}
                                   (dom/h3 nil (str episode ". " title))
                                   (dom/a #js {:href (str "http://www.imdb.com/title/" imdbID)} "imdb rating:")
@@ -71,7 +73,7 @@
        Object
        ;; drag event ordering: start, over, drop, end
        (drag-start [this e index]
-                   (om/update-state! this assoc :dragged-index index)) ;; track the dragged index in the Parent state
+                   (om/update-state! this assoc :dragged-index index)) ;; track the dragged index in the parent state
        (drag-over [this e index])
 
        (drag-drop [this e index]
