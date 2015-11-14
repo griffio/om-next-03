@@ -69,30 +69,31 @@
        (query [this]
               [{:episodes (om/get-query Episode)}])
        Object
+       ;; drag event ordering: start, over, drop, end
        (drag-start [this e index]
-                   (om/update-state! this assoc :dragged-index index))
-
-       (drag-end [this e index]
-                 (om/update-state! this dissoc :dragged-index))
-
+                   (om/update-state! this assoc :dragged-index index)) ;; track the dragged index in the Parent state
        (drag-over [this e index])
 
        (drag-drop [this e index]
-                  (let [from-idx (:dragged-index (om/get-state this))
+                  (let [from-idx (:dragged-index (om/get-state this)) ;; get the dragged episode index for drop event
                         to-idx index]
                     (om/transact! this `[(episodes/drag {:from ~from-idx :to ~to-idx})]))) ;; `[(query) read)] - https://github.com/omcljs/om/wiki/Om-Next-FAQ
+       (drag-end [this e index]
+                 (om/update-state! this dissoc :dragged-index)) ;; dragging has completed
+
        (render [this]
                (let [{:keys [episodes]} (om/props this)]
                  (dom/div nil
                           (dom/ol nil
-                                  (map-indexed
-                                    (fn [idx ep]
-                                      (episode-ui (om/computed ep
-                                                               {:drag-start (fn [e] (.drag-start this e idx)) ;; associate the episode ordinal index with each callback
-                                                                :drag-end   (fn [e] (.drag-end this idx))
-                                                                :drag-over  (fn [e] (.drag-over this idx))
-                                                                :drag-drop  (fn [e] (.drag-drop this e idx))})))
-                                    episodes))))))
+                                  (->> episodes
+                                       (map-indexed
+                                         (fn [idx ep]
+                                           (episode-ui
+                                             (om/computed ep
+                                                          {:drag-start (fn [e] (.drag-start this e idx)) ;; associate the episode ordinal index with each callback
+                                                           :drag-end   (fn [e] (.drag-end this e idx))
+                                                           :drag-over  (fn [e] (.drag-over this e idx))
+                                                           :drag-drop  (fn [e] (.drag-drop this e idx))}))))))))))
 
 (defmulti reading om/dispatch)
 
