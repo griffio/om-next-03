@@ -23,14 +23,21 @@
   (let [val (episodes from) parts (split-at to (remove-episode episodes val)) part1 (first parts) part2 (second parts)]
     (vec (concat part1 [val] part2))))
 
-(defn reconciler-send [url]
-  "result takes a callback to receive json response"
-  (fn [m cb]
-    (.send XhrIo url
-           (fn [_]
-             (this-as this
-               (let [x (tt/read (tt/reader :json) (.getResponseText this))]
-                 (cb x)))))))
+(defn remote-url-mapping [remote]
+  "remote mapping to url"
+  (cond
+    (contains? remote :season1) "/season1.json"
+    (contains? remote :season2) "/season2.json"))
+
+(defn reconciler-send []
+  "makes a query to the remote and the result takes a callback to receive json response."
+  (fn [re cb] ;; remote expression keyed by remote target e.g {:season1 [{:episodes [:episode :title :released :imdbRating :imdbID]}]}
+    (let [url (remote-url-mapping re)]
+      (.send XhrIo url
+             (fn [_]
+               (this-as this
+                 (let [x (tt/read (tt/reader :json) (.getResponseText this))]
+                   (cb x))))))))
 
 (defui Episode
        static om/Ident
@@ -44,20 +51,20 @@
                (let [{:keys [episode title imdbRating imdbID]} (om/props this)
                      {:keys [drag-drop drag-end drag-over drag-start]} (om/get-computed this)] ;; computed delegate callbacks
                  (dom/li nil
-                         (dom/div #js {:className   "js-dragging"
+                         (dom/div #js {:className   "js-draggable"
                                        :draggable   true
                                        :onDragStart (fn [e] (let [datr (.-dataTransfer e)]
                                                               (set! (.-effectAllowed datr) "move")
-                                                              (.setData datr "text" title);; set anything, we are not using the data
+                                                              (.setData datr "text" title) ;; set anything, we are not using the data
                                                               (drag-start e)))
                                        :onDragEnd   (fn [e] (let []
                                                               (drag-end e)))
                                        :onDragOver  (fn [e] (let []
-                                                              (.preventDefault e)
+                                                              (.preventDefault e) ;; prevent default to allow drop!
                                                               (-> e .-dataTransfer .-dropEffect (set! "move"))
                                                               (drag-over e)))
                                        :onDrop      (fn [e] (let []
-                                                              (.preventDefault e)
+                                                              (.preventDefault e) ;; prevent default browser action
                                                               (.stopPropagation e)
                                                               (drag-drop e)))}
                                   (dom/h3 nil (str episode ". " title))
@@ -73,7 +80,7 @@
        Object
        ;; drag event ordering: start, over, drop, end
        (drag-start [this e index]
-                   (om/update-state! this assoc :dragged-index index)) ;; track the dragged index in the parent state
+                   (om/update-state! this assoc :dragged-index index)) ;; track the dragged index in this parent state
        (drag-over [this e index])
 
        (drag-drop [this e index]
@@ -100,27 +107,27 @@
 (defmulti reading om/dispatch)
 
 (defmethod reading :episodes
-  [{:keys [state ast]} key _]
+  [{:keys [state ast]} key params] ;; ast and params are available if used
   (let [st @state]
     (if (contains? st key)
       {:value (get st key)}                                 ;; loads data from app state
-      {:remote-episodes true})))                            ;; loads data from external file /episodes.json
+      {:season2 true})))                                    ;; loads data from external file season2.json
 
 (defmulti mutating om/dispatch)
 
 (defmethod mutating 'episodes/drag
   [{:keys [state]} _ {:keys [from to]}]
-  {:value {:keys [:episodes]}
+  {:value {:keys [:episodes]}                               ;; not needed but can be used for client re-rendering hints
    :action
-          (fn [] (swap! state update :episodes drag-episode from to))})
+          (fn [] (swap! state update :episodes drag-episode from to))}) ;; change the actual list of episodes
 
 (def reconciler
   (om/reconciler
     {:state     (atom {})
      :normalize false
-     :remotes   [:remote-episodes]                          ;; vector of remotes
+     :remotes   [:season1 :season2]                         ;; vector of remotes that can be selected
      :parser    (om/parser {:read reading :mutate mutating})
-     :send      (reconciler-send "/episodes2.json")}))
+     :send      (reconciler-send)}))
 
 (om/add-root! reconciler Episodes (gdom/getElement "ui"))
 

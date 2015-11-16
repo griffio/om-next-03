@@ -1,8 +1,13 @@
 # om-next-03
 
-Simple [om-next](https://github.com/omcljs/om/wiki/Quick-Start-%28om.next%29) example.
+Simple example based around [om-next](https://github.com/omcljs/om/wiki/Quick-Start-%28om.next%29) 
  
-A Drag and Drop list (with data from xhr json file to show remote reconciler)
+A Drag and Drop list
+
+initial xhr load of 'remote' data
+computed event handlers
+local state
+read/mutate queries
 
 (Works in Chrome, Safari and The Fox) 
  
