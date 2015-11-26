@@ -4,10 +4,12 @@ Simple example based around [om-next](https://github.com/omcljs/om/wiki/Quick-St
  
 A Drag and Drop list
 
-initial xhr load of 'remote' data
-computed event handlers
-local state
+initial xhr load of 'remote' data,
+computed event handlers,
+local state,
 read/mutate queries
+
+**This is not an example of how remote hosts work**.
 
 (Works in Chrome, Safari and The Fox) 
  
