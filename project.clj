@@ -1,69 +1,53 @@
-(defproject om-next-03 "0.1.0-SNAPSHOT"
-  :description "om-next-03"
-  :url "https://github.com/griffio/om-next-03"
-  :license {:name "Eclipse Public License"
-            :url  "http://www.eclipse.org/legal/epl-v10.html"}
-
-  :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "1.7.170"]
-                 [org.omcljs/om "1.0.0-alpha24"]
-                 [org.clojure/test.check "0.8.2"]
+(defproject om-tutorial "0.1.0-SNAPSHOT"
+  :description "A Tutorial for Om 1.0.0 (next)"
+  :dependencies [[org.clojure/clojure "1.7.0" :scope "provided"]
+                 [org.clojure/clojurescript "1.7.170" :scope "provided"]
+                 [devcards "0.2.1" :exclusions [org.omcljs/om]]
+                 [datascript "0.13.3"]
                  [com.cognitect/transit-cljs "0.8.225"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [figwheel-sidecar "0.5.0-SNAPSHOT"]]
+                 [org.omcljs/om "1.0.0-alpha24"]
+                 [figwheel-sidecar "0.5.0-SNAPSHOT" :scope "test"]]
 
-  :plugins [[lein-cljsbuild "1.1.1"]]
+  :source-paths ["src/main/cljs" "src/cards/cljs"]
 
-  :source-paths ["src"]
+  :clean-targets ^{:protect false} ["resources/public/js" "resources/public/cards" "target"]
 
-  :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
+  :figwheel {:build-ids   ["dev" "cards"]
+             :server-port 3449}
 
   :cljsbuild {
-              :builds [{:id           "dev"
-                        :source-paths ["src"]
+              :builds
+              [
+               {:id           "dev"
+                :figwheel     true
+                :source-paths ["src/main/cljs"]
+                :compiler     {:main                 om-next-03.core
+                               :asset-path           "js"
+                               :output-to            "resources/public/js/main.js"
+                               :output-dir           "resources/public/js"
+                               :recompile-dependents true
+                               :parallel-build       true
+                               :verbose              false}}
 
-                        :figwheel     {:on-jsload "om-next-03.core/on-js-reload"}
+               {:id           "cards"
+                :figwheel     {:cards true}
+                :source-paths ["src/main/cljs" "src/cards/cljs"]
+                :compiler     {
+                               :main                 om-next-03.cards
+                               :source-map-timestamp true
+                               :asset-path           "cards"
+                               :output-to            "resources/public/cards/cards.js"
+                               :output-dir           "resources/public/cards"
+                               :recompile-dependents true
+                               :parallel-build       true
+                               :verbose              false}}
+               ]}
 
-                        :compiler     {:main                 om-next-03.core
-                                       :asset-path           "js/compiled/out"
-                                       :output-to            "resources/public/js/compiled/om_next_03.js"
-                                       :output-dir           "resources/public/js/compiled/out"
-                                       :source-map-timestamp true}}
-                       {:id           "min"
-                        :source-paths ["src"]
-                        :compiler     {:output-to     "resources/public/js/compiled/om_next_03.js"
-                                       :main          om-next-03.core
-                                       :optimizations :advanced
-                                       :pretty-print  false}}]}
+  :profiles {
+             :dev {:source-paths ["src/dev"]
+                   :repl-options {:init-ns user
+                                  :port    7001}}})
 
-  :figwheel {
-             ;; :http-server-root "public" ;; default and assumes "resources" 
-             ;; :server-port 3449 ;; default
-             ;; :server-ip "127.0.0.1" 
 
-             :css-dirs ["resources/public/css"]             ;; watch and update CSS
 
-             ;; Start an nREPL server into the running figwheel process
-             ;; :nrepl-port 7888
-
-             ;; Server Ring Handler (optional)
-             ;; if you want to embed a ring handler into the figwheel http-kit
-             ;; server, this is for simple ring servers, if this
-             ;; doesn't work for you just run your own server :)
-             ;; :ring-handler hello_world.server/handler
-
-             ;; To be able to open files in your editor from the heads up display
-             ;; you will need to put a script on your path.
-             ;; that script will have to take a file path and a line number
-             ;; ie. in  ~/bin/myfile-opener
-             ;; #! /bin/sh
-             ;; emacsclient -n +$2 $1
-             ;;
-             ;; :open-file-command "myfile-opener"
-
-             ;; if you want to disable the REPL
-             ;; :repl false
-
-             ;; to configure a different figwheel logfile path
-             ;; :server-logfile "tmp/logs/figwheel-logfile.log" 
-             })

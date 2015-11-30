@@ -13,3 +13,5 @@ pom.xml
 .nrepl-port
 .idea
 *.iml
+resources/public/js
+resources/public/cards

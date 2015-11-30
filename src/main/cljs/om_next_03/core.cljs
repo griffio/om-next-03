@@ -1,4 +1,4 @@
-(ns ^:figwheel-always om-next-03.core
+(ns om-next-03.core
   (:import [goog.net XhrIo])
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require
@@ -20,8 +20,10 @@
   (filter (fn [it] (not= it ep)) episodes))
 
 (defn drag-episode [episodes from to]
-  (let [val (episodes from) parts (split-at to (remove-episode episodes val)) part1 (first parts) part2 (second parts)]
-    (vec (concat part1 [val] part2))))
+  "get the episode to be moved, remove the episode and split the result into two parts, splice the episode back."
+  (let [episode (episodes from) parts (split-at to (remove-episode episodes episode))
+        part1 (first parts) part2 (second parts)]
+    (vec (concat part1 [episode] part2))))
 
 (defn remote-url-mapping [remote]
   "remote mapping to url"
@@ -31,7 +33,7 @@
 
 (defn reconciler-send []
   "makes a query to the remote and the result takes a callback to receive json response."
-  (fn [re cb] ;; remote expression keyed by remote target e.g {:season1 [{:episodes [:episode :title :released :imdbRating :imdbID]}]}
+  (fn [re cb]                                               ;; remote expression keyed by remote target e.g {:season1 [{:episodes [:episode :title :released :imdbRating :imdbID]}]}
     (let [url (remote-url-mapping re)]
       (.send XhrIo url
              (fn [_]
@@ -46,7 +48,9 @@
        static om/IQuery
        (query [this]
               [:episode :title :released :imdbRating :imdbID])
+
        Object
+
        (render [this]
                (let [{:keys [episode title imdbRating imdbID]} (om/props this)
                      {:keys [drag-drop drag-end drag-over drag-start]} (om/get-computed this)] ;; computed delegate callbacks
@@ -107,7 +111,7 @@
 (defmulti reading om/dispatch)
 
 (defmethod reading :episodes
-  [{:keys [state ast]} key params] ;; ast and params are available if used
+  [{:keys [state ast]} key params]                          ;; ast and params are available if used
   (let [st @state]
     (if (contains? st key)
       {:value (get st key)}                                 ;; loads data from app state
