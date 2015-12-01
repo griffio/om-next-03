@@ -7,9 +7,6 @@
     [cognitect.transit :as tt]
     [om.next :as om :refer-macros [defui]]
     [om.dom :as dom]
-    [clojure.test.check :as ck]
-    [clojure.test.check.generators :as ckgs]
-    [clojure.test.check.properties :as ckps]
     [cljs.core.async :refer [chan put!]]))
 
 (enable-console-print!)
