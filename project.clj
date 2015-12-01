@@ -31,7 +31,7 @@
                                :verbose              false}}
 
                {:id           "cards"
-                :figwheel     {:cards true}
+                :figwheel     {:devcards true}
                 :source-paths ["src/main/cljs" "src/cards/cljs"]
                 :compiler     {
                                :main                 om-next-03.cards
