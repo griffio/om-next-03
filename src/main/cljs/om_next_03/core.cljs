@@ -130,6 +130,8 @@
      :parser    (om/parser {:read reading :mutate mutating})
      :send      (reconciler-send)}))
 
+(def episodes-ui (om/factory Episodes))
+
 (om/add-root! reconciler Episodes (gdom/getElement "ui"))
 
 (defn on-js-reload []

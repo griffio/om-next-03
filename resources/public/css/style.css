@@ -5,29 +5,33 @@ body {
     font-size: 14px;
 }
 
-a {
+.main a {
     color: gold;
     font-weight: bold;
 }
 
-label {
+.main label {
     padding: 0 1em;
     font-size: 1.3em;
 }
 
-ol {
+.cards ol {
+    list-style: none;
+}
+
+.main ol {
     list-style: none;
     width: 500px;
     float: left;
     background: silver;
 }
 
-li {
+.main li {
     padding: 10px;
     background: steelblue;
     color: white;
 }
 
-li.js-dragging {
+.main li.js-dragging {
     background: coral;
 }
