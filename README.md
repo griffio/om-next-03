@@ -21,6 +21,12 @@ read/mutate queries
 
 ## Setup
 
+~~~
+lein run -m clojure.main script/repl.clj
+~~~
+
+or
+
 Intellij - Cursive - REPL
 
 ![Figwheel Idea Cursive](https://raw.githubusercontent.com/griffio/griffio.github.io/master/public/figwheel-idea.png)
