@@ -13,7 +13,7 @@ read/mutate queries
 
 (Works in Chrome, Safari and The Fox) 
  
-[1.0.0-alpha28](https://clojars.org/org.omcljs/om)
+[1.0.0-alpha30](https://clojars.org/org.omcljs/om)
 
 ## Overview
 
@@ -47,6 +47,6 @@ get live reloading, nor a REPL.
 
 ## License
 
-Copyright © 2015 
+Copyright © 2016
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
