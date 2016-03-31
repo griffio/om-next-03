@@ -1,16 +1,17 @@
 (ns om-next-03.cards
   (:require-macros
     [cljs.test :refer [is]]
-    [devcards.core :as dc :refer [defcard defcard-doc noframe-doc deftest dom-node]])
+    [devcards.core :refer [defcard defcard-doc noframe-doc deftest dom-node]])
   (:require
+    [devcards.core :refer-macros [defcard]]
     [om-next-03.core :refer [drag-episode episodes-ui]]
-    [om.next :as om]
     [om.dom :as dom]))
 
 (deftest dragging-episode-from-first-to-last-position
             "returns a vector with the episodes in new ordering"
             (let [eps [{:ep 1} {:ep 2} {:ep 3}]]
-              (is (= (drag-episode eps 0 2) [{:ep 2} {:ep 3} {:ep 1}]))))
+              (is (= (drag-episode
+                       eps 0 2) [{:ep 2} {:ep 3} {:ep 1}]))))
 
 (deftest dragging-episode-from-last-to-first-position
             "returns a vector with the episodes in new ordering"
