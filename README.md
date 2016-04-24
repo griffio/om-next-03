@@ -13,7 +13,7 @@ read/mutate queries
 
 (Works in Chrome, Safari and The Fox) 
  
-[1.0.0-alpha32](https://clojars.org/org.omcljs/om)
+[1.0.0-alpha34](https://clojars.org/org.omcljs/om)
 
 ## Overview
 
