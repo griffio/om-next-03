@@ -6,7 +6,7 @@
                  [datascript "0.13.3"]
                  [com.cognitect/transit-cljs "0.8.225"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [org.omcljs/om "1.0.0-alpha37"]
+                 [org.omcljs/om "1.0.0-alpha38"]
                  [figwheel-sidecar "0.5.4-3" :scope "test"]]
 
   :source-paths ["src/main/cljs" "src/cards/cljs"]
