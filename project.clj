@@ -4,17 +4,14 @@
                  [org.clojure/clojurescript "1.9.89" :scope "provided"]
                  [devcards "0.2.1-6" :exclusions [org.omcljs/om]]
                  [datascript "0.13.3"]
-                 [com.cognitect/transit-cljs "0.8.225"]
+                 [com.cognitect/transit-cljs "0.8.239"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [org.omcljs/om "1.0.0-alpha41"]
-                 [figwheel-sidecar "0.5.4-3" :scope "test"]]
+                 [org.omcljs/om "1.0.0-alpha44"]
+                 [figwheel-sidecar "0.5.7" :scope "test"]]
 
   :source-paths ["src/main/cljs" "src/cards/cljs"]
 
   :clean-targets ^{:protect false} ["resources/public/js" "resources/public/cards" "target"]
-
-  :figwheel {:build-ids   ["dev" "cards"]
-             :server-port 3449}
 
   :cljsbuild {
               :builds
