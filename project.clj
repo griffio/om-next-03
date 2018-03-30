@@ -1,12 +1,12 @@
 (defproject om-tutorial "0.1.0-SNAPSHOT"
   :description "A Tutorial for Om 1.0.0 (next)"
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
-                 [org.clojure/clojurescript "1.9.946" :scope "provided"]
+                 [org.clojure/clojurescript "1.10.238" :scope "provided"]
                  [devcards "0.2.4" :exclusions [org.omcljs/om]]
                  [datascript "0.13.3"]
                  [com.cognitect/transit-cljs "0.8.243"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [org.omcljs/om "1.0.0-beta2"]
+                 [org.omcljs/om "1.0.0-beta3"]
                  [figwheel-sidecar "0.5.7" :scope "test"]]
 
   :source-paths ["src/main/cljs" "src/cards/cljs"]
